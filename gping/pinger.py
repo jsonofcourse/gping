@@ -134,10 +134,13 @@ def plot(width, height, data, host):
 
     # Filter the -1's (timeouts) from the data so it doesn't impact avg, sum etc.
     filtered_data = [d for d in data if d != -1]
+    # Capturing the -1's for the data so we can show loss
+    dropped_data = [d for d in data if d == -1]
     if not filtered_data:
         return canvas
 
     average_ping = sum(filtered_data) / len(filtered_data)
+    dropped_ping = len(dropped_data) / (len(filtered_data) + len(dropped_data))
     max_ping = max(filtered_data)
 
     if max_ping > (average_ping * 2):
@@ -184,10 +187,11 @@ def plot(width, height, data, host):
         )
 
     stats_box = [
-        "Cur: {:6.0f}".format(filtered_data[0]),
-        "Max: {:6.0f}".format(max(filtered_data)),
-        "Min: {:6.0f}".format(min(filtered_data)),  # Filter None values
-        "Avg: {:6.0f}".format(average_ping)
+        "Cur: {:3.0f}ms".format(filtered_data[0]),
+        "Max: {:3.0f}ms".format(max(filtered_data)),
+        "Min: {:3.0f}ms".format(min(filtered_data)),  # Filter None values
+        "Avg: {:3.0f}ms".format(average_ping),
+        "P/L:  {:3.0%}".format(dropped_ping)
     ]
     # creating the box for the ping information in the middle
     midpoint = Point(
